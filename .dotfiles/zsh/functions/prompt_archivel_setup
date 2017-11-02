@@ -1,0 +1,71 @@
+
+# Load dependencies.
+pmodload 'helper'
+
+function prompt_archivel_precmd {
+  # Get Git repository information.
+  if (( $+functions[git-info] )); then
+    git-info
+  fi
+}
+
+
+function prompt_archivel_setup {
+    unsetopt XTRACE KSH_ARRAYS
+    prompt_opts=(cr percent subst)
+
+    # Load required functions.
+    autoload -Uz add-zsh-hook
+
+    # Add hook for calling git-info before each command.
+    add-zsh-hook precmd prompt_archivel_precmd
+
+    zstyle ':prezto:module:git:info' verbose 'yes'
+
+    zstyle ':prezto:module:git:info:action'   format '%%B%F{yellow} %s%f%%b '
+    zstyle ':prezto:module:git:info:branch'   format '%F{22}%K{148} %b%f '
+    zstyle ':prezto:module:git:info:commit'   format '%F{22}%K{148} %.7c%f '
+    zstyle ':prezto:module:git:info:position' format '%F{15}%K{1} %p%f '
+
+    zstyle ':prezto:module:git:info:added' format ' %%B%F{green}✚%f%%b'
+    zstyle ':prezto:module:git:info:ahead' format ' %%B%F{yellow}⬆%f%%b'
+    zstyle ':prezto:module:git:info:behind' format ' %%B%F{yellow}⬇%f%%b'
+    zstyle ':prezto:module:git:info:deleted' format ' %%B%F{red}✖%f%%b'
+    zstyle ':prezto:module:git:info:modified' format ' %%B%F{blue}✱%f%%b'
+    zstyle ':prezto:module:git:info:renamed' format ' %%B%F{magenta}➜%f%%b'
+    zstyle ':prezto:module:git:info:stashed' format ' %%B%F{cyan}✭%f%%b'
+    zstyle ':prezto:module:git:info:unmerged' format ' %%B%F{yellow}═%f%%b'
+    zstyle ':prezto:module:git:info:untracked' format ' %%B%F{white}◼%f%%b'
+
+    zstyle ':prezto:module:git:info:keys' format \
+        'prompt'  '%f$(coalesce "%b" "%p" "%c")%s' \
+        'rprompt' '%A%B%S%a%d%m%r%U%u'
+
+    if echo $TERM | grep -q "256" ; then
+        # 256 couleurs
+        P_DATE="%F{248}%K{236}%T "
+        P_USER="%(!.%F{15}%K{1}.%F{22}%K{148}) %n "
+        if [[ -n "$SSH_TTY" ]] ; then
+            P_HOST="%F{255}%K{33} @%m "
+        fi
+        P_PATH="%F{255}%K{240} %~ "
+        P_GIT='${(e)git_info[prompt]}'
+        PROMPT="$P_DATE$P_USER$P_HOST$P_PATH$P_GIT%f%k%F{227}%#%f "
+        RPROMPT='${git_info[rprompt]}'
+
+        alias tmux='tmux -2'
+    else
+        # 16 couleurs
+        GREY="%F{7}"
+        RED="%F{1}"
+        BLUE="%F{6}"
+        YELLOW="%F{3}"
+        GREEN="%F{2}"
+        WHITE="%F{7}"
+        PROMPT="$GREY%T %(!.$BLUE.$RED)%n$YELLOW@$WHITE%m $GREEN%~$YELLOW%#%f "
+    fi
+}
+
+prompt_archivel_setup "$@"
+
+# vim:filetype=zsh autoindent expandtab shiftwidth=4

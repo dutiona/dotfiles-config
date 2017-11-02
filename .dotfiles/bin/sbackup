@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+ssh iza encfs /data/clement/euler/clement/{.sbackup,sbackup} \
+    --idle=30 \
+    -S < ~/.unison/key || return 1
+unison $@ $(hostname)
+ssh iza fusermount -u /data/clement/euler/clement/sbackup
+

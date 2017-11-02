@@ -1,0 +1,582 @@
+
+" Load plugin {{{
+    source ~/.vim/bundles.vim
+" }}}
+
+" Basic configuration {{{
+    syntax on
+    filetype plugin indent on
+
+    set fileformats=unix,dos
+    set encoding=utf-8
+    set fileformat=unix
+    set noswapfile
+    set nobackup
+    set autowrite
+    set splitbelow
+    set splitright
+    set history=1000
+    set backspace=indent,eol,start      " Comportement « sympathique » de la touche backspace
+    set wildmenu                        " Une petite fenêtre pour voir les complétions possibles
+    set wildmode=list:longest,full
+    set wildignore=.svn,CVS,.git,.hg,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpe?g,*.png,*.xpm,*.gif,*.pyc,*/.tox/*,*.egg-info/*
+    set nojoinspaces                    " Comportement amélioré de la touche J
+    set confirm                         " Confirmation lorsqu'on quitte et qu'il y a des modifications non sauvegardé
+    set autoread                        " watch for file changes
+    set title
+    set cursorline                      " Mise en évidence de la ligne où se trouve le curseur
+    set number                          " Affiche les numéros des lignes
+    set showmatch                       " Animation lors de la fermeture des parenthèses
+    set laststatus=2
+    set scrolloff=3                     " keep at least 3 lines above/below
+    set nostartofline
+
+    " Recherche {{{
+        " Recherche insensible à la casse lorsque qu'auncune majuscule n'est utilisée. "
+        " Les deux options suivantes sont nécessaires.
+        set ignorecase
+        set smartcase
+        set infercase
+        " Recherche incrémentielle
+        set incsearch
+
+        " Colore les recherches en cours
+        set hlsearch
+    " }}}
+    " Folding {{{
+        set foldenable
+        set foldmethod=marker
+        set foldlevel=0
+        set foldcolumn=0
+        set foldtext=FoldText()
+        " Universal FoldText function {{{
+        function! FoldText(...)
+            " This function uses code from doy's vim-foldtext: https://github.com/doy/vim-foldtext
+            " Prepare fold variables {{{
+            " Use function argument as line text if provided
+            let l:line = a:0 > 0 ? a:1 : getline(v:foldstart)
+
+            let l:line_count = v:foldend - v:foldstart + 1
+            let l:indent = repeat(' ', indent(v:foldstart))
+
+            let l:w_win = winwidth(0)
+            let l:w_num = getwinvar(0, '&number') * getwinvar(0, '&numberwidth')
+            let l:w_fold = getwinvar(0, '&foldcolumn')
+            " }}}
+            " Handle diff foldmethod {{{
+            if &fdm == 'diff'
+                let l:text = printf('❪ %s matching lines ❫', l:line_count)
+
+                " Center-align the foldtext
+                return repeat('∾', (l:w_win - strchars(l:text) - l:w_num - l:w_fold) / 2) . l:text
+            endif
+            " }}}
+            " Handle other foldmethods {{{
+            let l:text = l:line
+            " Remove foldmarkers {{{
+            let l:foldmarkers = split(&foldmarker, ',')
+            let l:text = substitute(l:text, '\V' . l:foldmarkers[0] . '\%(\d\+\)\?\s\*', '', '')
+            " }}}
+            " Remove comments {{{
+            let l:comment = split(&commentstring, '%s')
+
+            if l:comment[0] != ''
+                let l:comment_begin = l:comment[0]
+                let l:comment_end = ''
+
+                if len(l:comment) > 1
+                    let l:comment_end = l:comment[1]
+                endif
+
+                let l:pattern = '\V' . l:comment_begin . '\s\*' . l:comment_end . '\s\*\$'
+
+                if l:text =~ l:pattern
+                    let l:text = substitute(l:text, l:pattern, ' ', '')
+                else
+                    let l:text = substitute(l:text, '.*\V' . l:comment_begin, ' ', '')
+
+                    if l:comment_end != ''
+                        let l:text = substitute(l:text, '\V' . l:comment_end, ' ', '')
+                    endif
+                endif
+            endif
+            " }}}
+            " Remove preceding non-word characters {{{
+            let l:text = substitute(l:text, '^\W*', '', '')
+            " }}}
+            " Remove surrounding whitespace {{{
+            let l:text = substitute(l:text, '^\s*\(.\{-}\)\s*$', '\1', '')
+            " }}}
+            " Make unmatched block delimiters prettier {{{
+            let l:text = substitute(l:text, '([^)]*$',   '̦̦❪ ⠤ ❫', '')
+            let l:text = substitute(l:text, '{[^}]*$',   '❪ ⠤ ❫', '')
+            let l:text = substitute(l:text, '\[[^\]]*$', '❪ ⠤ ❫', '')
+            " }}}
+            " Add arrows when indent level > 2 spaces {{{
+            if indent(v:foldstart) > 2
+                let l:cline = substitute(l:line, '^\s*\(.\{-}\)\s*$', '\1', '')
+                let l:clen = strlen(matchstr(l:cline, '^\W*'))
+
+                let l:indent = repeat(' ', indent(v:foldstart) - 2)
+                let l:text = '‣ ' . l:text
+            endif
+            " }}}
+            " Prepare fold text {{{
+            let l:fnum = printf(' %s ', l:line_count)
+            let l:ftext = printf('%s%s ', l:indent, l:text)
+            " }}}
+            return l:ftext . repeat('₋', l:w_win - strchars(l:fnum) - strchars(l:ftext) - l:w_num - l:w_fold) . l:fnum
+            " }}}
+        endfunction
+        " }}}
+    " }}}
+    " Instantly leave insert mode when pressing <Esc> {{{
+    " This works by disabling the mapping timeout completely in normal mode,
+    " and enabling it in insert mode with a very low timeout length.
+    augroup fastescape
+        autocmd!
+
+        set notimeout
+        set ttimeout
+        set timeoutlen=10
+
+        au InsertEnter * set timeout
+        au InsertLeave * set notimeout
+    augroup END
+    " }}}
+    " Define , as map leader {{{
+        let mapleader = ','
+        "let mapleader = '\'
+    " }}}
+    " Utilisation de la souris {{{
+    if has('mouse')
+        set mouse=a
+    endif
+    " }}}
+    " Affichage des caractères spéciaux {{{
+        set list
+        set fillchars=vert:┊,fold:‣,diff:░
+        set listchars=nbsp:_,trail:_,tab:▶-,precedes:◂,extends:▸
+        set showbreak=↪
+    " }}}
+" }}}
+" Plugins configuration {{{
+    " Surround {{{
+        let g:surround_no_mappings=1
+        nmap ds  <Plug>Dsurround
+        nmap hs  <Plug>Csurround
+        nmap ys  <Plug>Ysurround
+        nmap yS  <Plug>YSurround
+        nmap yss <Plug>Yssurround
+        nmap ySs <Plug>YSsurround
+        nmap ySS <Plug>YSsurround
+        xmap <Leader>s   <Plug>VSurround
+        xmap <Leader>gs  <Plug>VgSurround
+        if !hasmapto("<Plug>Isurround","i") && "" == mapcheck("<C-S>","i")
+        imap    <C-S> <Plug>Isurround
+        endif
+        imap      <C-G>s <Plug>Isurround
+        imap      <C-G>S <Plug>ISurround
+    " }}}
+    " NERDTree {{{
+        noremap <F8> :NERDTreeTabsToggle<CR>
+        let g:NERDTreeMinimalUI = 1
+        let g:NERDTreeCaseSensitiveSort = 1
+        let g:nerdtree_tabs_open_on_gui_startup = 0
+    " }}}
+    " Comments {{{
+        " nmap <F2> :TComment<CR>
+        " vmap <F2> :TComment<CR>
+        nmap gc <Plug>Commentary
+        nmap <F2> <Plug>CommentaryLine
+        xmap <F2> <Plug>Commentary
+        " map <F2> <plug>NERDCommenterToggle
+    " }}}
+    " Tagbar {{{
+        if executable('ctags')
+            nmap <F9> :TagbarToggle<CR>
+        endif
+    " }}}
+    " Unimpaired {{{
+        " Visually select the text that was last edited/pasted
+        nmap gV `[v`]
+    " }}}
+    " auto-pairs {{{
+        let g:AutoPairsShortcutToggle = '<Leader>a'
+        let g:AutoPairsShortcutBackInsert = '<C-e>'
+        let g:AutoPairsFlyMode = 1
+    " }}}
+    " Powerline / Airline {{{
+        " call Pl#Theme#InsertSegment('ws_marker', 'after', 'lineinfo')
+        " durant
+        let g:airline_theme='powerlineish'
+    " }}}
+    " neosnippet {{{
+        " Plugin key-mappings.
+        imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+        smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+        xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+        " SuperTab like snippets behavior.
+        " imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+        " \ "\<Plug>(neosnippet_expand_or_jump)"
+        " \: pumvisible() ? "\<C-n>" : "\<TAB>"
+        " smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+        " \ "\<Plug>(neosnippet_expand_or_jump)"
+        " \: "\<TAB>"
+
+        " For snippet_complete marker.
+        if has('conceal')
+          set conceallevel=2 concealcursor=i
+        endif
+    " }}}
+    " Unite {{{
+        " replace CtrlP
+        " call unite#filters#matcher_default#use(['matcher_fuzzy'])
+        nnoremap <silent> <Leader>p :<C-u>Unite -auto-resize -start-insert -direction=botright file_rec/async<CR>
+        " grep
+        nnoremap <Leader>/ :<C-u>Unite grep:.<CR>
+        " buffer explorer
+        nnoremap <Leader>b :<C-u>Unite -no-split -auto-preview -buffer-name=buffer buffer<CR>
+    " }}}
+    " VimFiler {{{
+        let g:vimfiler_as_default_explorer = 1
+        " call vimfiler#custom#profile('sidetree', 'context', 
+    " }}}
+    " indentLine {{{
+        let g:indentLine_color_term = 239
+    " }}}
+    " neocomplete {{{
+        if has('lua') && (v:version > 703 || (v:version == 703 && has('patch885')))
+            " Disable AutoComplPop
+            let g:acp_enableAtStartup = 0
+            " Use neocomplete
+            let g:neocomplete#enable_at_startup = 1
+            " Use smartcase
+            let g:neocomplete#enable_smart_case = 1
+            " Set minimum sytax keyword length
+            let g:neocomplete#sources#syntax#min_keyword_length = 3
+            let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+            let g:neocomplete#enable_auto_close_preview = 1
+
+            " Define dictionary.
+            let g:neocomplete#sources#dictionary#dictionaries = {
+                        \ 'default' : '',
+                        \ 'vimshell' : $HOME.'/.vimshell_hist',
+                        \ 'scheme' : $HOME.'/.gosh_completions'
+                        \ }
+
+            " Define keyword.
+            if !exists('g:neocomplete#keyword_patterns')
+                let g:neocomplete#keyword_patterns = {}
+            endif
+            let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+            " Plugin key-mappings.
+            inoremap <expr><C-g>     neocomplete#undo_completion()
+            inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+            " Recommended key-mappings.
+            " <CR>: close popup and save indent.
+            inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+            function! s:my_cr_function()
+                " return neocomplete#close_popup() . "\<CR>"
+                " For no inserting <CR> key.
+                return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+            endfunction
+            " <TAB>: completion.
+            inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+            " <C-h>, <BS>: close popup and delete backword char.
+            inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+            inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+            inoremap <expr><C-y>  neocomplete#close_popup()
+            inoremap <expr><C-e>  neocomplete#cancel_popup()
+            " Close popup by <Space>.
+            "inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+
+            " For cursor moving in insert mode(Not recommended)
+            "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
+            "inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
+            "inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
+            "inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
+            " Or set this.
+            "let g:neocomplete#enable_cursor_hold_i = 1
+            " Or set this.
+            "let g:neocomplete#enable_insert_char_pre = 1
+
+            " AutoComplPop like behavior.
+            "let g:neocomplete#enable_auto_select = 1
+
+            " Shell like behavior(not recommended).
+            "set completeopt+=longest
+            "let g:neocomplete#enable_auto_select = 1
+            "let g:neocomplete#disable_auto_complete = 1
+            "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+            " Enable omni completion.
+            autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+            autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+            autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+            autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+            autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+            " Enable heavy omni completion.
+            if !exists('g:neocomplete#sources#omni#input_patterns')
+                let g:neocomplete#sources#omni#input_patterns = {}
+            endif
+            "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+            let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+            let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+            " For perlomni.vim setting.
+            " https://github.com/c9s/perlomni.vim
+            let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+            " Recommended key-mappings.
+            " <CR>: close popup and save indent.
+            " inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+            " function! s:my_cr_function()
+              " return neocomplete#close_popup() . "\<CR>"
+              " For no inserting <CR> key.
+              " return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+            " endfunction
+            " <TAB>: completion.
+            " inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+            " <C-h>, <BS>: close popup and delete backword char.
+            " inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+            " inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+            " inoremap <expr><C-y>  neocomplete#close_popup()
+            " inoremap <expr><C-e>  neocomplete#cancel_popup()
+            " Close popup by <Space>.
+            "inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+            " <ESC>: leave insert mode
+            " inoremap <expr><ESC> pumvisible() ? neocomplete#cancel_popup() . "\<ESC>" : "\<ESC>"
+        else
+            let g:neocomplcache_enable_at_startup = 1
+            let g:neocomplcache_enable_smart_case = 1
+
+            " Recommended key-mappings.
+            " <CR>: close popup and save indent.
+            inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+            function! s:my_cr_function()
+              return neocomplcache#smart_close_popup() . "\<CR>"
+              " For no inserting <CR> key.
+              "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+            endfunction
+            " <TAB>: completion.
+            inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+            " <C-h>, <BS>: close popup and delete backword char.
+            inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+            inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+            inoremap <expr><C-y>  neocomplcache#close_popup()
+            inoremap <expr><C-e>  neocomplcache#cancel_popup()
+            " Close popup by <Space>.
+            "inoremap <expr><Space> pumvisible() ? neocomplcache#close_popup() : "\<Space>"
+
+            " Enable omni completion.
+            autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+            autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+            autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+            autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+            autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+        endif
+    " }}}
+    " incsearch {{{
+        map /  <Plug>(incsearch-forward)
+        map ?  <Plug>(incsearch-backward)
+        map g/ <Plug>(incsearch-stay)
+    " }}}
+    " quickfixsigns_vim {{{
+        set lazyredraw
+    " }}}
+    " rainbow {{{
+        let g:rainbow_active = 1
+    " }}}
+    " sparkup {{{
+        let g:sparkupExecuteMapping = '<C-T>'
+    " }}}
+" }}}
+" Autocommands {{{
+    augroup General " {{{
+        autocmd!
+        " Help file settings {{{
+            function! s:SetupHelpWindow()
+                wincmd L
+                vertical resize 80
+                setl nonumber winfixwidth colorcolumn=
+
+                let b:stl = "#[Branch] HELP#[BranchS] [>] #[FileName]%<%t #[FileNameS][>>]%* %=#[LinePercentS][<<]#[LinePercent] %p%% " " Set custom statusline
+
+                nnoremap <buffer> <Space> <C-]> " Space selects subject
+                nnoremap <buffer> <BS>    <C-T> " Backspace to go back
+            endfunction
+
+            au FileType help au BufEnter,BufWinEnter <buffer> call <SID>SetupHelpWindow()
+        " }}}
+        " Fix space highlighting in diff files {{{
+            au FileType diff hi clear RedundantSpaces
+                        \ | hi DiffCol ctermbg=238 cterm=bold
+                        \ | match DiffCol /^[ +-]\([+-]\)\@!/
+        " }}}
+        " Load .Xdefaults/.Xresources on save {{{
+            au BufWritePost,FileWritePost ~/.Xdefaults,~/.Xresources silent! !xrdb -load % >/dev/null 2>&1
+        " }}}
+        " Use PKGBUILD filetype {{{
+            au BufEnter PKGBUILD* set ft=PKGBUILD
+        " }}}
+    augroup END " }}}
+    augroup Formatting " {{{
+        autocmd!
+        " Fix gitcommit formatting {{{
+            au FileType gitcommit setl formatoptions+=t formatoptions-=l textwidth=72 colorcolumn=72
+        " }}}
+        " Format plain text and e-mails correctly {{{
+            au BufNewFile,BufRead *.txt setl ft=text
+            au FileType mail,text setl formatoptions+=t formatoptions-=l textwidth=80 colorcolumn=80
+        " }}}
+        " Format python script correctly {{{
+            " au BufNewFile,BufRead *.py setl ft=python
+            au FileType python setl colorcolumn=80
+        " }}}
+    augroup END" }}}
+    augroup VimFiles " {{{
+        autocmd!
+
+        au Filetype vim noremap <buffer> <F1> <Esc>:help <C-r><C-w><CR>
+    augroup END " }}}
+    " Help in new tabs {{{
+    function! s:helptab()
+      if &buftype == 'help'
+        wincmd T
+        nnoremap <buffer> q :q<cr>
+      endif
+    endfunction
+
+    augroup vimrc_help
+      autocmd!
+      autocmd BufEnter *.txt call s:helptab()
+    augroup END
+    " }}}
+" }}}
+" Mappings {{{
+    vnoremap > >gv
+    vnoremap < <gv
+    nnoremap <silent> <F3> :set paste!<CR>
+
+    " For when you forget to sudo.. Really Write the file.
+    command! -bar -nargs=0 W silent! exec "write !sudo tee % >/dev/null" | silent! edit!
+
+    " Résout un bug avec les flèches en mode insertion
+    imap [A ki
+
+    " Touche Home et End
+    noremap [H <Home>
+    noremap [F <End>
+    inoremap [H <Home>
+    inoremap [F <End>
+
+    " 'cd' vers le chemin de la fenêtre en cours d'édition.
+    nmap <Leader>cd :cd %:p:h<CR>
+
+    " Gestion de la correction orthographique
+    set spellsuggest=10 " dans le cas de la commande z=
+    noremap <Leader>sf :setlocal spell spelllang=fr <CR>
+    noremap <Leader>se :setlocal spell spelllang=en <CR>
+    noremap <Leader>sn :setlocal nospell <CR>
+
+    " edit helper
+    cnoremap %% <C-R>=expand('%:h').'/'<CR>
+    map <Leader>es :sp %%
+    map <Leader>ev :vsp %%
+    map <Leader>et :tabe %%
+    map <Leader>j :tabe 
+
+    " C-w pour sauvegarder
+    nmap <C-w> :w<CR>
+    imap <C-w> <Esc>:w<CR>
+
+    " Remplacement des nbsp par des espaces
+    imap   <Space>
+" }}}
+" UI options {{{
+    " Theme {{{
+        if ( &t_Co == 8 )
+            colorscheme default
+        else
+            set background=dark
+            try
+                " let g:solarized_termcolors=256
+                " colorscheme wombat256mod
+                " colorscheme apprentice
+                let g:seoul256_background = 235
+                colorscheme seoul256
+            catch
+                colorscheme solarized
+                " colorscheme desert
+            endtry
+        endif
+    " }}}
+    " URxvt-specific settings {{{
+        if &term =~ "rxvt-256color"
+            silent !echo -ne "]12;\#8ae234\x7"
+
+            let &t_SI="]12;\#dd4010\x7"
+            let &t_EI="]12;\#8ae234\x7"
+
+            au VimLeave * silent !echo -ne "]12;\#8ae234\x7"
+
+            set ttymouse=urxvt
+        endif
+    " }}}
+    " Syntastic settings {{{
+        let g:syntastic_enable_signs = 1
+        let g:syntastic_auto_loc_list = 0
+    " }}}
+" }}}
+" Indentation {{{
+    " Indentation intelligente
+    set smartindent
+    filetype plugin indent on
+
+    " Taille de l'indentation
+    set shiftwidth=4
+
+    " Comportement de <TAB> intelligent
+    set smarttab
+
+    " Pour les utilisateurs de python
+    set expandtab
+" }}}
+" Pour latex {{{
+    set grepprg=grep\ -nH\ $*
+    let g:tex_flavor = "latex"
+" }}}
+" Clavier bépo {{{
+    let s:bepo_users = [ "clement", "cd", "demoulins", "cdemoulins" ]
+    if exists('$SUDO_USER') && index(s:bepo_users, $SUDO_USER) >= 0
+        " echo "sudo from clement -> bepo ok"
+        source ~/.vim/bepo.vim
+    elseif !exists('$SSH_CLIENT') && !exists('$SUDO_USER')
+        " echo "not ssh & not sudo -> bepo ok"
+        source ~/.vim/bepo.vim
+    else
+        let s:client_ip = strpart($SSH_CLIENT, 0, stridx($SSH_CLIENT, " "))
+        let s:list_ips = [
+                    \ "192.168.101.95",
+                    \ "176.31.254.203",
+                    \ "163.5.55.2",
+                    \ "163.5.55.11",
+                    \ "109.190.87.181",
+                    \ "192.168.100.15",
+                    \ "2a01:e35:2e6f:daa0:213:77ff:fe27:38c7",
+                    \ "2001:41d0:fc90:1100:daa2:5eff:fe95:4402",
+                    \ "192.168.1.254"]
+        if index(s:list_ips, s:client_ip) >= 0
+            " echo "ssh from clement -> bepo ok"
+            source ~/.vim/bepo.vim
+        else
+            " echo "no bepo"
+            nnoremap <silent> <F6> :source ~/.vim/bepo.vim<CR>
+        endif
+    endif
+" }}}

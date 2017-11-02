@@ -1,0 +1,6 @@
+#!/bin/sh
+
+file=$1
+iconv -c -t cp1252 "$file" > "$file.tmp"
+mv "$file.tmp" "$file"
+

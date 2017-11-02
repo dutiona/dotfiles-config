@@ -1,0 +1,11 @@
+#!/bin/sh
+
+Xephyr -ac -br -noreset -screen 800x600 :1.0 &> /dev/null &
+xephyr_pid=$!
+sleep 3
+export DISPLAY=:1.0
+# export LD_PRELOAD=/usr/lib/libluajit-5.1.so
+setxkbmap fr bepo
+# awesome --config ~/.config/awesome/rc.lua.test
+awesome --config ~/.config/awesome/rc.lua
+kill $xephyr_pid

@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+function name() {
+    echo $1 | grep -o -E '[^/]+$' | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\ /\\\ /g'  | sed 's/\(/\\\(/g' | sed 's/\)/\\\)/g'
+}
+
+for i in $@
+do
+    if [ -f $i ] ; then
+        #i=$(echo $i | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g')
+        fname=$(name $i)
+        chmod 644 $i
+        scp $i ssh.archivel.fr:/data/queue/$fname
+        rm -f $i
+    fi
+done

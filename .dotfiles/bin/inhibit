@@ -1,0 +1,43 @@
+#!/usr/bin/python2
+
+# The user using this script need the right on dbus object org.freedesktop.login1.
+# (edit the file /etc/dbus-1/system.d/org.freedesktop.login1)
+
+import os
+import dbus
+import time
+import argparse
+from subprocess import call
+
+def inhibit():
+    bus = dbus.SystemBus()
+    login1 = bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1')
+    manager = dbus.Interface(login1, 'org.freedesktop.login1.Manager')
+    return manager.Inhibit('handle-lid-switch', 'pause-after', 'pause-after', 'block')
+
+def main():
+    parser = argparse.ArgumentParser(description='Inhibit suspend to ram when lid is closed.')
+    parser.add_argument('time', metavar='N', type=int,
+            help='Inhibit suspend until N seconds.')
+    args = parser.parse_args()
+
+    lock = inhibit()
+    try:
+        time.sleep(float(args.time))
+    except KeyboardInterrupt:
+        return
+
+    for p in ('quodlibet --pause', 'mpc pause', 'pkill mplayer', 'pkill vlc', 'umount -l /media/video'):
+        try:
+            call(p.split(" "))
+            time.sleep(1)
+        except:
+            pass
+    time.sleep(2)
+
+    fd = lock.take()
+    os.close(fd)
+
+
+if __name__ == '__main__':
+    main()

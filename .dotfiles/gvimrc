@@ -1,0 +1,10 @@
+set background=light
+let g:seoul256_background=254
+colorscheme seoul256-light
+
+set guioptions-=T
+set guioptions-=r
+set guioptions-=L
+set guioptions-=e
+
+set nomousehide

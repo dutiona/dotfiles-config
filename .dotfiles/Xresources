@@ -1,0 +1,90 @@
+
+URxvt*buffered:         true
+URxvt*perl-ext:         
+URxvt*perl-ext-comon:   
+URxvt*matcher.button:   2
+URxvt*scrollBar:        false
+URxvt*thickness:        1
+URxvt*internalBorder:   0
+URxvt*externalBorder:   0
+URxvt*cursorBlink:      true
+URxvt*urgentOnBell:     true
+URxvt*pointerBlank:     true
+URxvt*cutchars:         "&()*,;<=>?@[]^{|}/'\""
+URxvt*iso14755:         false
+URxvt*iso14755_52:      false
+URxvt*font:             xft:Terminus:pixelsize=12:autohint=true:antialias=false
+! URxvt*font:             -*-terminus-medium-*-*-*-*-120-*-*-*-*-iso8859-1
+URxvt*loginShell:       true
+URxvt*saveLines:        0
+
+
+/* *background:            #171717 */
+/* *foreground:            #ffffff */
+/* *cursorColor:           #8ae234 */
+/* *underlineColor:        #ffc005 */
+
+/* !Black */
+/* *color0:                #101010 */
+/* *color8:                #2e3436 */
+/* !Red */
+/* *color1:                #cc0000 */
+/* *color9:                #ff361e */
+/* !Green */
+/* *color2:                #8ae234 */
+/* *color10:               #93ff00 */
+/* !Yellow */
+/* *color3:                #ffc005 */
+/* *color11:               #ffd00a */
+/* !Blue */
+/* *color4:                #004f9e */
+/* *color12:               #0071ff */
+/* !Purple */
+/* *color5:                #e50060 */
+/* *color13:               #eb0061 */
+/* !Cyan */
+/* *color6:                #4bb8fd */
+/* *color14:               #34E2E2 */
+/* !White */
+/* *color7:                #eeeeec */
+/* *color15:               #f2f2f2 */
+
+*background:            #171717
+*foreground:            #ffffff
+*cursorColor:           #8ae234
+*underlineColor:        #ffc005
+
+!Black
+*color0:                #101010
+*color8:                #2e3436
+!Red
+*color1:                #cc0000
+*color9:                #ff361e
+!Green
+*color2:                #8ae234
+*color10:               #93ff00
+!Yellow
+*color3:                #ffc005
+*color11:               #ffd00a
+!Blue
+*color4:                #004f9e
+*color12:               #0071ff
+!Purple
+*color5:                #e50060
+*color13:               #eb0061
+!Cyan
+*color6:                #4bb8fd
+*color14:               #34E2E2
+!White
+*color7:                #eeeeec
+*color15:               #f2f2f2
+
+
+UXterm*faceName:        Terminus:pixelsize=12:antialias=false
+
+Xft*antialias:          true
+Xft*rgba:               rgb
+Xft*hinting:            true
+Xft*hintstyle:          hintslight
+Xcursor*theme:          Neutral
+

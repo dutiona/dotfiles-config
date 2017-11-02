@@ -1,0 +1,7 @@
+#command
+t         forw-line
+s         back-line
+T         forw-line-force
+S         back-line-force
+#line-edit
+#env

@@ -1,0 +1,111 @@
+
+" Options
+set complete=search,location
+set guioptions=sCMc
+set hlfind
+set defsearch=ddg
+set scrollsteps=10
+set altwildmode="list:longest"
+
+" Autocommands
+"au LocationChange 'rss.archivel.fr' -javascript modes.set(modes.PASS_THROUGH)
+set passkeys+='rss\.archivel\.fr':tTsSdqrfa
+set passkeys+='freshrss\.archivel\.fr':tTsSdqrfa
+
+" Plugins directory
+set runtimepath=/home/clement/.pentadactyl
+
+" BÉPO configuration
+" {W} -> [É]
+" ——————————
+" On remappe W sur É :
+map -builtin é w
+map -builtin É W
+" Corollaire, pour effacer/remplacer un mot quand on n’est pas au début (daé / laé).
+" (attention, cela diminue la réactivité du {A}…)
+map -builtin aé aw
+map -builtin aÉ aW
+" Pour faciliter les manipulations de fenêtres, on utilise {W} comme un Ctrl+W :
+map -builtin w <C-w>
+map -builtin W <C-w><C-w>
+
+" [HJKL] -> {CTSR}
+" ————————————————
+" {cr} = « gauche / droite »
+map -builtin c h
+map -builtin r l
+" {ts} = « haut / bas »
+map -builtin t 5j
+map -builtin s 5k
+" {CR} = « haut / bas de l'écran »
+map -builtin C H
+map -builtin R L
+" {TS} = « joindre / aide »
+map -builtin T J
+map -builtin S K
+" Corollaire : repli suivant / précédent
+map -builtin zs zj
+map -builtin zt zk
+
+" {HJKL} <- [CTSR]
+" ————————————————
+" {J} = « Jusqu'à »            (j = suivant, J = précédant)
+map -builtin j t
+map -builtin J T
+" {L} = « Change »             (h = bloc, H = jusqu'à la fin de ligne)
+map -builtin l c
+map -builtin L C
+" {H} = « Remplace »           (l = caractère, L = texte)
+map -builtin h r
+map -builtin H R
+" {K} = « Substitue »          (k = caractère, K = ligne)
+map -builtin k s
+map -builtin K S
+" Corollaire : correction orthographique
+map -builtin ]k ]s
+map -builtin [k [s
+
+" Désambiguation de {g}
+" —————————————————————
+" ligne écran précédente / suivante (à l'intérieur d'une phrase)
+map -builtin gs gk
+map -builtin gt gj
+" onglet précédant / suivant
+map -builtin gb gT
+map -builtin gé gt
+"" optionnel : {gB} / {gÉ} pour aller au premier / dernier onglet
+map -builtin gB :exe "silent! tabfirst"<CR>
+map -builtin gÉ :exe "silent! tablast"<CR>
+"" optionnel : {g"} pour aller au début de la ligne écran
+"map -builtin g" g0
+
+" <> en direct
+" ————————————
+map -builtin « <
+map -builtin » >
+
+
+"" Chiffres en accès direct
+"" ————————————————————————
+"map -builtin " 1
+"map -builtin 1 "
+"map -builtin « 2
+"map -builtin 2 <
+"map -builtin » 3
+"map -builtin 3 >
+"map -builtin ( 4
+"map -builtin 4 (
+"map -builtin ) 5
+"map -builtin 5 )
+"map -builtin @ 6
+"map -builtin 6 @
+"map -builtin + 7
+"map -builtin 7 +
+"map -builtin - 8
+"map -builtin 8 -
+"map -builtin / 9
+"map -builtin 9 /
+"map -builtin * 0
+"map -builtin 0 *
+
+" vim: set ft=vim :

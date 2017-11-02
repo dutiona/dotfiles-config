@@ -1,0 +1,56 @@
+#!/bin/zsh
+
+local setquota="/usr/sbin/setquota"
+
+local workPath="/work"
+[[ $# -eq 1 ]] && workPath="$1"
+
+local passwd="$(getent passwd)"
+local shadow="$(getent shadow)"
+
+local currentDate="$(date +%s)"
+
+function mkwork() {
+    [[ -d "$workPath/$1" ]] || {
+        mkdir -p "$workPath/$1"
+        chown $2:$3 "$workPath/$1"
+        chmod 700 "$workPath/$1"
+    }
+    if grep -q usrquota /etc/fstab && [[ $(quota -u $1 | wc -l) -lt 3 ]] ; then
+        $setquota -u $1 -a 500000 1000000 0 0
+    fi
+}
+
+# if there is less than 50 account, there is probably a problem with ldap
+if [[ $(echo "$passwd" | wc -l) -lt 50 ]] ; then
+    echo "Problem with ldap ?"
+    exit 1
+fi
+
+while IFS=':' read login pw uid gid gecos homeDirectory shell
+do
+    # Ignore system and local account
+    [[ $uid -lt 10000 || $uid -eq 65534 ]] && continue
+
+    shadowExpire="$(echo $shadow | egrep "^$login:" | cut -d':' -f8)"
+
+    # Account without shadow extension
+    if [[ $shadowExpire = "" ]]; then
+        mkwork "$login" "$uid" "$gid"
+    else
+        shadowExpireAsSec="$(($shadowExpire*60*60*24))"
+        # Account active + 1 year
+        if [[ "$(($shadowExpireAsSec + 31536000))" -gt "$currentDate" ]]; then
+            mkwork "$login" "$uid" "$gid"
+        # Inactive existing account
+        elif [[ -e "$workPath/$login" ]]; then
+            rm -rf "$workPath/$login"
+        fi
+    fi
+done <<< "$passwd"
+
+# Cleaning of $workPath
+for f in $workPath/*(/)
+do
+    echo "$passwd" | egrep -q "^$(basename $f):" || rm -rf $f
+done

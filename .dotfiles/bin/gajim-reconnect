@@ -1,0 +1,17 @@
+#!/bin/bash
+set -x
+
+which gajim-remote > /dev/null
+if [ "1" == "$?" ]; then
+    echo "Command gajim-remote not found"
+    return 1
+fi
+
+if [ "True" != "$(gajim-remote check_gajim_running)" ]; then
+    echo "Gajim not running"
+    return 2
+fi
+
+gajim-remote change_status offline
+sleep 1
+gajim-remote change_status online

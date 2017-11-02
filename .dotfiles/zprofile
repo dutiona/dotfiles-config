@@ -1,0 +1,144 @@
+#
+# Executes commands at login pre-zshrc.
+#
+
+#
+# Paths
+#
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path
+
+fpath=(
+  $fpath
+  ~/.zsh/functions
+)
+
+# Temporary Files {{{
+if [[ ! -d "$TMPDIR" ]]; then
+  export TMPDIR="/tmp/$USER"
+  mkdir -p -m 700 "$TMPDIR"
+fi
+
+TMPPREFIX="${TMPDIR%/}/zsh"
+if [[ ! -d "$TMPPREFIX" ]]; then
+  mkdir -p "$TMPPREFIX"
+fi
+# }}}
+
+# Old os compatibility {{{
+if [[ -z "$terminfo[khome]" ]] ; then
+    export TERM="rxvt-256color"
+fi
+# }}}
+
+# MacOs compatibility {{{
+if [ `uname` = "Darwin" ] ; then
+    if [ -f /opt/local/bin/port ] ; then
+        export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+        export MANPATH="/opt/local/share/man:$MANPATH"
+    elif [ -f /sw/bin/init.sh ] ; then
+        source /sw/bin/init.sh
+    fi
+    if [[ -d /opt/local/libexec/gnubin ]] ; then
+        export PATH="/opt/local/libexec/gnubin:$PATH"
+    elif [[ -d /usr/local/opt/coreutils/libexec/gnubin ]] ; then
+        export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+        export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+    fi
+    ulimit -n 1024
+fi
+# }}}
+
+# add color to some unix command
+if [ -d "/usr/lib/cw" ] ; then
+    path=(
+        /usr/lib/cw
+        $path
+    )
+fi
+
+# alway use ccache
+if [ -d "/usr/lib/ccache" ] ; then
+    path=(
+        /usr/lib/ccache/bin
+        $path
+    )
+fi
+
+# activate autojump if possible
+if [[ -f "/usr/share/autojjump/autojump.zsh" ]] ; then
+    source /usr/share/autojump/autojump.zsh
+fi
+
+umask 022
+
+# Environment variables {{{
+    export WORDCHARS="*?_-.[]~=&;!#$%^(){}<>"
+    # Command history {{{
+        export HISTFILE=$HOME/.history_$USER
+        export HISTSIZE=10000
+        export SAVEHIST=$HISTSIZE
+    # }}}
+    # Applications {{{
+        export EDITOR="vim"
+        export VISUAL="vim"
+        export XTERM="urxvt"
+        export BROWSER="firefox"
+        # export PAGER="most -s"
+        # export PAGER="vimpager"
+        # export MANPAGER="/bin/sh -c \"unset MANPAGER;col -b -x | iconv -c | vim -R -c 'set ft=man nomod nolist nospell nonu' -c 'runtime! macros/less.vim' -\""
+
+        # Couleurs dans les pages de man avec less
+        export LESS_TERMCAP_mb=$'\E[01;31m'    # début de blink
+        export LESS_TERMCAP_md=$'\E[01;31m'    # début de gras
+        export LESS_TERMCAP_me=$'\E[0m'        # fin
+        export LESS_TERMCAP_so=$'\E[01;44;33m' # début de la ligne d`état
+        export LESS_TERMCAP_se=$'\E[0m'        # fin
+        export LESS_TERMCAP_us=$'\E[01;32m'    # début de souligné
+        export LESS_TERMCAP_ue=$'\E[0m'        # fin
+
+        # export LESSOPEN="| /usr/bin/src-hilite-lesspipe.sh %s"
+        # export LESS=" -R "
+
+        # Blue bug with flash
+        export VDPAU_NVIDIA_NO_OVERLAY=1
+    # }}}
+    # Path {{{
+        if ! echo "$PATH" | grep -q "$HOME/.local" ; then
+            export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
+            path=(
+                $HOME/.local/{bin,sbin}
+                $path
+            )
+        fi
+        dotfiles_path="$(dirname $(readlink -f $HOME/.zprofile))"
+        if ! echo "$PATH" | grep -q "$dotfiles_path" ; then
+            export PYTHONPATH="$dotfiles_path/bin:$PYTHONPATH"
+            path=(
+                $dotfiles_path/bin
+                $path
+            )
+        fi
+    # }}}
+    # Couleurs {{{
+        # Gestion de la couleur pour 'ls' (exportation de LS_COLORS)
+        if [ -x /bin/dircolors ] ; then
+          if [ -r ~/.dir_colors ] ; then
+            eval "`dircolors ~/.dir_colors`"
+          elif [ -r /etc/dir_colors ] ; then
+            eval "`dircolors /etc/dir_colors`"
+          else
+            eval "`dircolors`"
+          fi
+        fi
+    # }}}
+# }}}
+
+# keychain {{{
+# if [[ -x /usr/bin/keychain ]] && [[ -z "$SSH_AGENT_PID" || -z "$GPG_AGENT_INFO"  ]] ; then
+#     eval $(keychain --eval --nogui --agents gpg,ssh -Q --quiet id_rsa DD51E028)
+# fi
+# }}}
+
+# vim:filetype=zsh autoindent expandtab shiftwidth=4

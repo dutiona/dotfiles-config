@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+
+import sys
+import glob
+import shutil
+from datetime import datetime, timedelta
+
+# log
+from logging import info, debug, warning
+import logging
+logging.basicConfig(level=logging.INFO)
+
+date_format = "%Y-%m-%d_%H:%M:%S"
+
+def clean(backup_folder):
+    backups = [
+            datetime.strptime(b.replace(backup_folder + "/", ""), date_format)
+            for b in glob.glob("{}/[0-9]*".format(backup_folder))
+            ]
+    backups.sort(reverse=True)
+    retain = set()
+    last = backups[0]
+    retain.add(last)
+    debug(last)
+    previous = last
+    delta = timedelta(days=1)
+    i = 0
+    for backup in backups:
+        debug("{} ? {} [delta={}, i={}]".format(backup, last-delta-backup, delta.days, i))
+        if backup <= last - delta:
+            if previous in retain:
+                debug("{}".format(backup))
+                retain.add(backup)
+                last = backup
+            else:
+                debug("{}".format(previous))
+                retain.add(previous)
+                last = previous
+            i += 1
+            if i >= delta.days:
+                delta *= 2
+                i = 0
+        previous = backup
+
+    # keep the oldest backup
+    retain.add(previous)
+
+    # print and construct the remove list
+    remove = set()
+    for b in backups:
+        if b in retain:
+            info("{}".format(b))
+        else:
+            info("{} -".format(b))
+            remove.add(b)
+
+    # finally, the cleaning
+    for b in remove:
+        shutil.rmtree(backup_folder + "/" + b.strftime(date_format))
+
+def main():
+    for arg in sys.argv[1:]:
+        clean(arg)
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+
+disper.load
+
+exec awesome

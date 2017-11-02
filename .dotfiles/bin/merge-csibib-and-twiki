@@ -1,0 +1,208 @@
+#!/usr/bin/python3
+
+import json
+import sys
+import re
+import subprocess
+import os
+import os.path
+import tempfile
+from pathlib import Path
+from bibtexparser import BibTexParser
+
+from sh import grep
+
+import logging
+from logging import debug, info, warning, error
+logging.basicConfig(level=logging.ERROR, format="%(levelname)s: %(message)s")
+#logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
+
+
+lrdeprojects = {
+    'Olena': 'Olena',
+    'Speaker Recognition Evaluation': 'Speaker ID',
+    'APMC': 'APMC',
+    'MILENA': 'Olena',
+    'olena': 'Olena',
+    'Lisp': 'Climb',
+    'Image processing': 'Olena',
+    'Vaucanson': 'Vaucanson',
+    'Transformers': 'Transformers',
+    'Speaker recognition': 'Speaker ID',
+    'Climb': 'Climb',
+    'Tiger': 'Tiger',
+    'Vaucanson GUI': 'Vaucanson',
+    'model checking': 'Spot',
+    'image processing': 'Olena',
+    'SPOT': 'Spot',
+    'Spot': 'Spot',
+    'CLIMB': 'Climb',
+    'vaucanson': 'Vaucanson',
+    'model-checking': 'Spot',
+    'Milena': 'Olena' }
+logos = {
+    '%LOGOAPMC%': 'APMC',
+    '%LOGOVAUCANSON%': 'Vaucanson',
+    '%LOGOOLENA%': 'Olena',
+    '%LOGOSPOT%': 'Spot',
+    '%LOGOTIGER%': 'Tiger',
+    '%LOGOIMA%': 'Olena' }
+
+
+def pretty_print(data):
+    print(json.dumps(data, indent=2, separators=(',', ': ')))
+
+def get_bibentry(record, bib):
+    return subprocess.check_output(["bibtool", "-q", "-i", bib, "-X", record["id"]], universal_newlines = True)
+
+def add_to_bibentry(bib, data):
+    _, datatempfile = tempfile.mkstemp()
+    _, outputtempfile = tempfile.mkstemp()
+    try:
+        with open(datatempfile, "w") as fh:
+            for field in data:
+                fh.write("add.field = {{{}}}\n".format(field))
+        subprocess.call(["bibtool",
+                "-q",
+                "-r", datatempfile,
+                "-o", outputtempfile,
+                "-i", str(bib)])
+        with open(outputtempfile) as fh:
+            print(fh.read())
+    finally:
+        os.unlink(datatempfile)
+        os.unlink(outputtempfile)
+
+def get_twiki_entry(twiki_entry_path):
+    debug("Get twiki entry '{}'".format(twiki_entry_path))
+    with twiki_entry_path.open(encoding='utf8') as filehandler:
+        content = filehandler.read()
+        return content
+
+def process(bib, twiki_path, temp_path):
+    with open(bib) as filehandler:
+        parser = BibTexParser(filehandler)
+        records, metadata = parser.parse()
+
+    #pretty_print(records)
+
+    tot_size = len(records)
+    with_yearnumber = 0
+    with_validurllrde = 0
+    with_twikientry = 0
+    with_twiki2entry = 0
+    ok = 0
+    for record in records:
+        if 'abstract' not in record or 'title' not in record:
+            error("Missing title/abstract for '{}'".format(record['id']))
+            #continue
+
+        prefix_id = False
+        yearnumber = False
+        twikiglob = 0
+        twikientries = set()
+        keywords = {}
+        lrdekeywords = set()
+
+        if 'year' not in record \
+                or 'number' not in record \
+                :
+            warning("Missing required keys '{}'".format(record['id']))
+        elif not re.match("[0-9]{4}", record['year']) \
+                or not re.match("[0-9]{4}", record['number']) \
+                :
+            warning("Invalid value year={year} number={number}".format(**record))
+        else:
+            yearnumber = True
+            with_yearnumber += 1
+            prefix_id = "{year}{number[2]}{number[3]}".format(**record)
+            debug("Searching {}/{}".format(twiki_path, prefix_id + '*.txt'))
+            twikiglob = len(list(twiki_path.glob(prefix_id + '*.txt'))) > 0
+
+        # search using urllrde bibtex entry for twiki files
+        urllrde = 'urllrde' in record
+        twiki = False
+        if urllrde and 'Seminar' in record['urllrde']:
+            with_validurllrde += 1
+            twikientry_path = twiki_path / (record['urllrde'] + '.txt')
+            twiki = twikientry_path.exists()
+            if twiki:
+                twikientries.add(os.path.basename(str(twikientry_path)))
+                with_twikientry += 1
+        else:
+            record['urllrde'] = ''
+
+        # search ref number in all twiki files
+        twiki2 = False
+        if 'number' in record:
+            for f in twiki_path.glob('*.txt'):
+                with f.open() as fh:
+                    content = fh.read()
+                    m = re.search('title="Ref" value="{}"'.format(record['number']), content)
+                    if m:
+                        twiki2 = True
+                        twikientries.add(os.path.basename(str(f)))
+                        with_twiki2entry += 1
+
+        # parse twiki files
+        for f in twikientries:
+            with (twiki_path / f).open() as fh:
+                for line in fh:
+                    m = re.search('%META:FIELD{name="(.*)" title=".*" value="(.*)"}%', line)
+                    if m:
+                        #print("{}: {}".format(m.group(1), m.group(2)))
+                        key = m.group(1)
+                        value = m.group(2)
+                        if value.strip() == "":
+                            continue
+                        elif key in keywords:
+                            keywords[key].add(value)
+                        else:
+                            keywords[key] = set()
+                            keywords[key].add(value)
+
+        if len(twikientries) > 0:
+            ok += 1
+
+        if 'Keywords' in keywords:
+            for i in keywords['Keywords']:
+                for j in i.split(","):
+                    k = j.strip()
+                    if k in lrdeprojects:
+                        lrdekeywords.add(lrdeprojects[k])
+        else:
+            keywords['Keywords'] = []
+        if 'Logo' in keywords:
+            for i in keywords['Logo']:
+                for j in i.split(","):
+                    k = j.strip()
+                    if k in logos:
+                        lrdekeywords.add(logos[k])
+
+        #print("{:>35}   {:1}{:1}{:1}{:1}{:1} {}".format(record['id'], urllrde, twiki, yearnumber, twikiglob, twiki2, ", ".join(lrdekeywords)))
+        #for k in keywords.keys():
+            #print("\t\t\t\t{}: {}".format(k, keywords[k]))
+
+
+        bib_entry = get_bibentry(record, bib)
+        with (temp_path / (record['id'] + ".bib")).open('w') as fh:
+            fh.write(bib_entry)
+        add_to_bibentry(temp_path / (record['id'] + ".bib"), [
+            "lrdeprojects = \"{}\"".format(", ".join(lrdekeywords)),
+            "lrdekeywords = \"{}\"".format(", ".join(keywords['Keywords']))])
+
+
+
+    #print()
+    #print("  ok / twiki / twiki2 / urllrde / yearnumber / total")
+    #print("----------------------------------------------------")
+    #print("{:4} / {:5} / {:6} / {:7} / {:10} / {:5}".format(ok, with_twikientry, with_twiki2entry, with_validurllrde, with_yearnumber, tot_size))
+    #print()
+    #print(lrdekeywords)
+
+
+def main():
+    process(sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3]))
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Remove stdout
+exec > /dev/null
+
+# Dump installed packages
+dpkg --get-selections > /root/package_selections.txt
+
+# Dump each mysql databases (if process mysqld exist)
+pgrep mysqld && {
+    mysql_user="backup"
+    mysql_pass="ohghie&thi[a6Ahp"
+    for mysql_db in $(mysql --user=${mysql_user} --password=${mysql_pass} <<< "show databases;" | tail -n +2 | egrep -v "_schema")
+    do
+        mysql_dump_file="/root/${mysql_db}_dump.sql.gz"
+        mysql_opts="--user=${mysql_user} --password=${mysql_pass}"
+
+        if [ x"${mysql_db}" == "xmysql" ]; then
+            mysql_opts="${mysql_opts} --ignore-table=mysql.event"
+        fi
+        mysqldump ${mysql_opts} --quick --single-transaction --databases ${mysql_db} | gzip > "${mysql_dump_file}"
+    done
+} || true
+
+# Dump ldap tree (if process slapd exist)
+pgrep slapd && {
+    slapcat 2>&1 | gzip > /root/ldap_dump.ldif.gz
+} || true
+
+# Dump postres databases (if process postgres exist)
+pgrep postgres && {
+    su - postgres -c "pg_dumpall" | gzip > "/root/postgres_dump.sql.gz"
+} || true

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Use dbus-launch if installed.
+if test x"$DBUS_SESSION_BUS_ADDRESS" = x""; then
+    if which dbus-launch >/dev/null 2>&1; then
+        eval `dbus-launch --sh-syntax --exit-with-session`
+        # some older versions of dbus don't export the var properly
+        export DBUS_SESSION_BUS_ADDRESS
+    else
+        echo "Could not find dbus-launch" >&2
+    fi
+fi
+
+disper.load
+xscreensaver -no-splash &
+
+#eval `gpg-agent --daemon --enable-ssh-support`
+eval `gnome-keyring-daemon --start --daemon`
+export GNOME_KEYRING_CONTROL
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
+export GNOME_KEYRING_PID
+
+#tint2 &
+nm-applet --sm-disable &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+start-pulseaudio-x11 &
+clipit &
+volti &
+
+exec wmfs

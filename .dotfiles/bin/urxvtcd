@@ -1,0 +1,7 @@
+#!/bin/zsh
+MY_SHELL="tmx"
+urxvtc "$@" -e $MY_SHELL -c "default 1"
+if [[ $? -eq 2 ]]; then
+    urxvtd -q -f -o
+    urxvtc "$@" -e $MY_SHELL -c "default 1"
+fi

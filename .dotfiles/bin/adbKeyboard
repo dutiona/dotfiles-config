@@ -1,0 +1,103 @@
+#!/bin/bash
+
+tty_backup=$(stty -g)
+
+declare -A map
+
+map["a"]="adb shell input keyevent 29"
+map["b"]="adb shell input keyevent 30"
+map["c"]="adb shell input keyevent 31"
+map["d"]="adb shell input keyevent 32"
+map["e"]="adb shell input keyevent 33"
+map["f"]="adb shell input keyevent 34"
+map["g"]="adb shell input keyevent 35"
+map["h"]="adb shell input keyevent 36"
+map["i"]="adb shell input keyevent 37"
+map["j"]="adb shell input keyevent 38"
+map["k"]="adb shell input keyevent 39"
+map["l"]="adb shell input keyevent 40"
+map["m"]="adb shell input keyevent 41"
+map["n"]="adb shell input keyevent 42"
+map["o"]="adb shell input keyevent 43"
+map["p"]="adb shell input keyevent 44"
+map["q"]="adb shell input keyevent 45"
+map["r"]="adb shell input keyevent 46"
+map["s"]="adb shell input keyevent 47"
+map["t"]="adb shell input keyevent 48"
+map["u"]="adb shell input keyevent 49"
+map["v"]="adb shell input keyevent 50"
+map["w"]="adb shell input keyevent 51"
+map["x"]="adb shell input keyevent 52"
+map["y"]="adb shell input keyevent 53"
+map["z"]="adb shell input keyevent 54"
+map["A"]="adb shell input keyevent 59 ; adb shell input keyevent 29"
+map["B"]="adb shell input keyevent 59 ; adb shell input keyevent 30"
+map["C"]="adb shell input keyevent 59 ; adb shell input keyevent 31"
+map["D"]="adb shell input keyevent 59 ; adb shell input keyevent 32"
+map["E"]="adb shell input keyevent 59 ; adb shell input keyevent 33"
+map["F"]="adb shell input keyevent 59 ; adb shell input keyevent 34"
+map["G"]="adb shell input keyevent 59 ; adb shell input keyevent 35"
+map["H"]="adb shell input keyevent 59 ; adb shell input keyevent 36"
+map["I"]="adb shell input keyevent 59 ; adb shell input keyevent 37"
+map["J"]="adb shell input keyevent 59 ; adb shell input keyevent 38"
+map["K"]="adb shell input keyevent 59 ; adb shell input keyevent 39"
+map["L"]="adb shell input keyevent 59 ; adb shell input keyevent 40"
+map["M"]="adb shell input keyevent 59 ; adb shell input keyevent 41"
+map["N"]="adb shell input keyevent 59 ; adb shell input keyevent 42"
+map["O"]="adb shell input keyevent 59 ; adb shell input keyevent 43"
+map["P"]="adb shell input keyevent 59 ; adb shell input keyevent 44"
+map["Q"]="adb shell input keyevent 59 ; adb shell input keyevent 45"
+map["R"]="adb shell input keyevent 59 ; adb shell input keyevent 46"
+map["S"]="adb shell input keyevent 59 ; adb shell input keyevent 47"
+map["T"]="adb shell input keyevent 59 ; adb shell input keyevent 48"
+map["U"]="adb shell input keyevent 59 ; adb shell input keyevent 49"
+map["V"]="adb shell input keyevent 59 ; adb shell input keyevent 50"
+map["W"]="adb shell input keyevent 59 ; adb shell input keyevent 51"
+map["X"]="adb shell input keyevent 59 ; adb shell input keyevent 52"
+map["Y"]="adb shell input keyevent 59 ; adb shell input keyevent 53"
+map["Z"]="adb shell input keyevent 59 ; adb shell input keyevent 54"
+map["0"]="adb shell input keyevent 7"
+map["1"]="adb shell input keyevent 8"
+map["2"]="adb shell input keyevent 9"
+map["3"]="adb shell input keyevent 10"
+map["4"]="adb shell input keyevent 11"
+map["5"]="adb shell input keyevent 12"
+map["6"]="adb shell input keyevent 13"
+map["7"]="adb shell input keyevent 14"
+map["8"]="adb shell input keyevent 15"
+map["9"]="adb shell input keyevent 16"
+map[" "]="adb shell input keyevent 62"
+map["*"]="adb shell input keyevent 17"
+map["#"]="adb shell input keyevent 18"
+map[","]="adb shell input keyevent 55"
+map["."]="adb shell input keyevent 56"
+map["	"]="adb shell input keyevent 61"
+map["\`"]="adb shell input keyevent 68"
+map["-"]="adb shell input keyevent 69"
+map["="]="adb shell input keyevent 70"
+map["["]="adb shell input keyevent 71"
+map["]"]="adb shell input keyevent 72"
+map["\\"]="adb shell input keyevent 73"
+map[";"]="adb shell input keyevent 74"
+map["'"]="adb shell input keyevent 75"
+map["/"]="adb shell input keyevent 76"
+map["@"]="adb shell input keyevent 77"
+map["+"]="adb shell input keyevent 81"
+#map[""]="adb shell input keyevent "
+#map[""]="adb shell input keyevent "
+#map[""]="adb shell input keyevent "
+
+stty -icanon -echo
+while true
+do
+    key="$(dd bs=1 count=1 2>/dev/null)"
+    if [ "$key" = "$(echo -en '\n')" ] ; then
+        (eval "adb shell input keyevent 66")
+    elif [ "$key" = "$(echo -en '\b')" ] ; then
+        (eval "adb shell input keyevent 67")
+    else
+        (eval "${map[$key]}")&
+    fi
+done
+
+stty "$tty_backup"

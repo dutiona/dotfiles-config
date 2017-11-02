@@ -1,0 +1,48 @@
+#!/bin/zsh
+
+# Colors
+local txtrst=$(tput sgr0) # Text reset
+local txtred=$(tput setaf 1)
+local txtgreen=$(tput setaf 2)
+local txtyellow=$(tput setaf 3)
+local txtblue=$(tput setaf 4)
+local txtcyan=$(tput setaf 6)
+
+local passwd="$(getent passwd)"
+local shadow="$(getent shadow)"
+local date="$(($(date +%s)/(24*60*60)))"
+
+while IFS=':' read uid pw uidNumber gidNumber cn homeDirectory shell
+do
+    # Ignore system account
+    [[ $uidNumber -lt 10000 || $uidNumber -eq 65534 ]] && continue
+
+    st=""
+    shadowExpire="$(echo "$shadow" | egrep "^$uid:" | cut -d':' -f8)"
+    if [[ $shadowExpire != "" ]] ; then
+
+        # Expired account
+        if [[ $shadowExpire -lt $date ]]; then
+            st="${txtred}Expired${txtrst}"
+            st="${st} (since $((${date}-${shadowExpire})) days)"
+            # if [ "$((${date}-${shadowExpire}))" -gt "365" ]; then
+                # st2="${txtyellow}$homeDirectory${txtrst}"
+            # fi
+
+            # Account with expired date
+        else
+            shadowExpireAsSec="$((${shadowExpire}*60*60*24))"
+            st="${txtgreen}$(date --date="@$shadowExpireAsSec" "+%A %d %B %Y")${txtrst}"
+            st="${st} ($((${shadowExpire}-${date})) days left)"
+        fi
+    fi
+
+    printf "%12s %5d:%-5d %-30s %-50s %s\n" \
+        "$uid" \
+        "$uidNumber" \
+        "$gidNumber" \
+        "$cn" \
+        "${txtyellow}${homeDirectory}${txtrst}" \
+        "$st"
+done <<< "$passwd" | sort
+

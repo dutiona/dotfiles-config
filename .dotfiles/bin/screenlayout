@@ -1,0 +1,48 @@
+#/bin/zsh
+
+settings_dir="$HOME/.screenlayout"
+
+function get_hash() {
+    xrandr \
+        | sed -r \
+            -e '1d' \
+            -e '/connected/ s/(\w) .*/\1/' \
+            -e 's/(\*\+)|( \+)//g' \
+        | md5sum | cut -f1 -d" "
+}
+
+function save_to_script() {
+    mkdir -p ${settings_dir}
+    local hash=$(get_hash)
+    {
+        echo "#!/bin/sh"
+        echo "xrandr \\"
+        xrandr | sed -r \
+            -e 's/^([^ ]+) connected primary ([0-9]+x[0-9]+)\+([0-9]+)\+([0-9]+).*/\t--output \1 --primary --mode \2 --pos \3x\4 \\/ p' \
+            -e 's/^([^ ]+) connected ([0-9]+x[0-9]+)\+([0-9]+)\+([0-9]+).*/\t--output \1 --mode \2 --pos \3x\4 \\/ p' \
+            -e 's/^([^ ]+) disconnected .*/\t--output \1 --off \\/ p' \
+            -e 'd'
+        echo
+    } > ${settings_dir}/${hash}
+}
+
+function load() {
+    export DISPLAY=":0.0"
+    pkill conky
+    local hash=$(get_hash)
+    if [[ -f "${settings_dir}/${hash}" ]]; then
+        eval "sh ${settings_dir}/${hash}"
+    else
+        xrandr --auto
+    fi
+    # sleep 2s
+    # echo "awesome.restart()" | awesome-client
+}
+
+case "$1" in
+    --save) save_to_script;;
+    --load) load;;
+    --hash) get_hash
+esac
+
+# vim: set ft=zsh :

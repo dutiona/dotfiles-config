@@ -1,0 +1,80 @@
+#!/bin/zsh
+
+# Am i root ?
+if [[ "x$UID" != "x0" ]]; then
+    sudo "$0" "$@"
+    exit
+fi
+
+local date=$(date "+%Y-%m-%d_%H:%M:%S")
+local name=$(uname -n)
+local backup_host="$name@navroles.archivel.fr"
+local additionals_params="$@"
+
+function clean() {
+    exit
+}
+
+function backup() {
+    local name="$1"
+    local local_path="$2"
+    local backup_path="/volume1/Backups/$name"
+
+    # Pre-script
+    if [[ -x "$HOME/.rsync/pre_$name" ]]
+    then
+        echo "Execute pre-script"
+        "$HOME/.rsync/pre_$name"
+    fi
+
+    if ! ssh $backup_host test -r "$backup_path"
+    then
+        ssh $backup_host mkdir -p "$backup_path/current"
+    fi
+
+    if [[ -f "$HOME/.rsync/include_$name" ]]
+    then
+        include_param="--include-from=$HOME/.rsync/include_$name"
+    fi
+    if [[ -f "$HOME/.rsync/exclude_$name" ]]
+    then
+        exclude_param="--exclude-from=$HOME/.rsync/exclude_$name"
+    fi
+
+    echo "Begin backup $name"
+    trap "clean" 2 3
+    rsync -axz --stats --human-readable --inplace --numeric-ids \
+        --delete --delete-excluded \
+        ${additionals_params} \
+        $include_param \
+        $exclude_param \
+        --link-dest=$backup_path/current \
+        "${local_path}" \
+        "$backup_host:$backup_path/incomplete-$date"
+    trap 2 3
+
+    echo "Updating 'current' link to '$date'"
+    ssh $backup_host " \
+        mv $backup_path/incomplete-$date $backup_path/$date \
+        && rm -rf $backup_path/current \
+        && ln -s $date $backup_path/current"
+}
+
+#size_before=$(ssh $backup_host "df /media/euler | tail -n1 | cut -d' ' -f8")
+backup "$name" "/"
+if grep -q ' /home ' /proc/self/mounts; then
+    backup "${name}-home" "/home"
+fi
+#size_after=$(ssh $backup_host "df /media/euler | tail -n1 | cut -d' ' -f8")
+#echo "Backup size: $(( (${size_after}-${size_before}) / 1024 ))MB"
+
+# Sample to use encfs on the backup host
+#
+# secure_path="/data/clement/euler/clement/sbackup"
+# encrypted_path="/data/clement/euler/clement/.sbackup"
+# backup_path="$secure_path/$name"
+# ssh $backup_host encfs $encrypted_path $secure_path \
+#     --idle=30 \
+#     -S < ~/.rsync/key || return 1
+
+# ssh $backup_host fusermount -u $secure_path

@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+NDAYS=30 # en jours
+SERIES_DIR="/data/download/series"
+MOVIES_DIR="/data/download/movies"
+
+find $SERIES_DIR -type f \( -mtime +$NDAYS -o -mtime $NDAYS \) \
+    -print \
+    -delete
+
+find $MOVIES_DIR -type f \( -mtime +$NDAYS -o -mtime $NDAYS \) \
+    -print \
+    -delete
+
+# find $DOWNLOAD_DIR -type d -empty \
+    # -delete

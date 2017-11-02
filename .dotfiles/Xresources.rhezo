@@ -1,0 +1,130 @@
+
+! URxvt.termName: xterm-256color
+! URxvt.keysym.Home: \033[H
+! URxvt.keysym.End: \033[F
+!URxvt.keysym.S-Up: \033[1;2A
+!URxvt.keysym.S-Down: \033[1;2B
+!URxvt.keysym.S-Right: \033[1;2C
+!URxvt.keysym.S-Left: \033[1;2D
+!URxvt.keysym.S-Home: \033[1;2H
+!URxvt.keysym.S-End: \033[1;2F
+!URxvt.keysym.C-Up: \033[1;5A
+!URxvt.keysym.C-Down: \033[1;5B
+!URxvt.keysym.C-Right: \033[1;5C
+!URxvt.keysym.C-Left: \033[1;5D
+!URxvt.keysym.C-S-Up: \033[1;6A
+!URxvt.keysym.C-S-Down: \033[1;6B
+!URxvt.keysym.C-S-Right: \033[1;6C
+!URXvt.keysym.C-S-Left: \033[1;6D
+
+!URxvt.geometry:                 80x25
+URxvt.buffered:                 true
+URxvt.perl-ext:          default,matcher
+!URxvt.perl-ext:          default,matcher,tabbed
+URxvt.url-launcher:             firefox
+URxvt.matcher.button:           2
+URxvt.scrollBar:                false
+! URxvt.scrollstyle:              none
+URxvt.thickness:                1
+! URxvt.scrollBar_right:          true
+! URxvt.scrollBar_floating:       true
+URxvt.internalBorder:           0
+URxvt.externalBorder:           0
+!URxvt.borderLess:               false
+URxvt.cursorBlink:              true
+!URxvt.shading:                  20
+!URxvt.fading:                   10
+URxvt.urgentOnBell:             true
+URxvt.pointerBlank:             true
+URxvt.cutchars:                 "&()*,;<=>?@[]^{|}/'\""
+!vim.saveLines: 0
+
+URxvt.iso14755:                 false
+URxvt.iso14755_52:              false
+
+Xcursor.theme: Neutral
+
+
+! Couleurs
+URxvt*background:               #171717
+URxvt.backgroundPixmap:         /home/clement/.urxvt_background.png;100x100+0+0:tile
+URxvt*foreground:               #ffffff
+URxvt*cursorColor:              #8ae234
+URxvt*underlineColor:           #ffc005
+!URxvt*font:                     xft:Terminus-9
+URxvt*font:                     xft:Terminus:pixelsize=14:autohint=true
+! URxvt*boldFont:                 xft:Terminus:bold:pixelsize=12
+! URxvt*italicFont:               xft:Terminus:italic:pixelsize=12
+! URxvt*boldItalicFont:           xft:Terminus:bold:italic:pixelsize=12
+! URxvt*font:                     xft:Terminus,xft:Dejavu Sans Mono:pixelsize=14:antialias=true:autohint=true
+! URxvt*boldFont:                 xft:Terminus:bold:pixelsize=14:antialias=true
+! Black
+URxvt*color0: #101010
+URxvt*color8: #2e3436
+! Red
+URxvt*color1: #cc0000
+URxvt*color9: #ff361e
+! Green
+URxvt*color2: #8ae234
+URxvt*color10: #93ff00
+! Yellow
+URxvt*color3: #ffc005
+URxvt*color11: #ffd00a
+! Blue
+URxvt*color4: #004f9e
+URxvt*color12: #0071ff
+! Purple
+URxvt*color5: #e50060
+URxvt*color13: #eb0061
+! Cyan
+URxvt*color6: #4bb8fd
+URxvt*color14: #34E2E2
+! White
+URxvt*color7: #eeeeec
+URxvt*color15: #f2f2f2
+! Transparence
+!URxvt.depth: 32
+!URxvt.background: rgba:0000/0000/0000/eeee
+
+! Couleurs xterm
+UXTerm*background:               #000000
+UXTerm*foreground:               #ffffff
+UXTerm*cursorColor:              #8ae234
+UXTerm*underlineColor:           #ffc005
+UXTerm*faceName:                 Terminus:pixelsize=14
+! UXTerm*boldFont:                 xft:Terminus:bold:pixelsize=14
+! UXTerm*font:                     xft:Terminus,xft:Dejavu Sans Mono:pixelsize=14:antialias=true:autohint=true
+! UXTerm*boldFont:                 xft:Terminus:bold:pixelsize=14:antialias=true
+! Black
+UXTerm*color0: #101010
+UXTerm*color8: #2e3436
+! Red
+UXTerm*color1: #cc0000
+UXTerm*color9: #ff361e
+! Green
+UXTerm*color2: #8ae234
+UXTerm*color10: #93ff00
+! Yellow
+UXTerm*color3: #ffc005
+UXTerm*color11: #ffd00a
+! Blue
+UXTerm*color4: #004f9e
+UXTerm*color12: #0071ff
+! Purple
+UXTerm*color5: #e50060
+UXTerm*color13: #eb0061
+! Cyan
+UXTerm*color6: #4bb8fd
+UXTerm*color14: #34E2E2
+! White
+UXTerm*color7: #eeeeec
+UXTerm*color15: #f2f2f2
+! Transparence
+!UXTerm.depth: 32
+!UXTerm.background: rgba:0000/0000/0000/eeee
+
+Xft.antialias: true
+Xft.rgba: rgb
+Xft.hinting: true
+Xft.hintstyle: hintslight
+

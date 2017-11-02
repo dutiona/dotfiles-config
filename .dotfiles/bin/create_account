@@ -1,0 +1,70 @@
+#!/bin/zsh
+
+set -e
+
+LDAP_URI="ldaps://ldap.lrde.epita.fr"
+BASE="dc=lrde,dc=epita,dc=fr"
+
+function create_account() {
+    uid="$1"
+    group="$2"
+    firstname="${(C)3}"
+    lastname="${(C)4}"
+    # uid="${(L)firstname:0:1}${(L)lastname// /}"
+    email="$uid@lrde.epita.fr"
+    emailalias="${(L)firstname}.${(L)lastname}@lrde.epita.fr"
+    uidNumber=$((1 + $(ldapsearch -x -LLL -S uidNumber -b "dc=lrde,dc=epita,dc=fr" "(objectClass=posixAccount)" uidNumber | tail -n2 | head -n1 | sed -rn 's/.* ([0-9]+)/\1/ p')))
+    gidNumber=$(ldapsearch -x -LLL -b "dc=lrde,dc=epita,dc=fr" "(&(objectClass=posixGroup)(cn=$2))" gidNumber | sed -rne 's/gidNumber: // p')
+    password="$(pwgen -ncB 8 1)"
+
+    if [[ $# -eq 4 ]] ; then
+        shadow="objectClass: shadowAccount
+shadowExpire: $(($(date --date="$4" +%s) / (24*60*60) + 1))"
+    fi
+
+    #cat <<EOF
+    echo -n 'login: '
+    read ldaplogin
+    echo -n 'ldap password: '
+    read -s ldappassword
+
+    # create the account
+    #cat <<EOF
+    ldapadd -x -H $LDAP_URI -D "uid=$ldaplogin,ou=people,$BASE" -w "$ldappassword" <<EOF
+dn: uid=$uid,ou=people,$BASE
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+uid: $uid
+uidNumber: $uidNumber
+gidNumber: $gidNumber
+cn: $firstname $lastname
+loginShell: /bin/bash
+mail: $email
+sn: $lastname
+givenName: $firstname
+homeDirectory: /lrde/home/$group/$uid
+$shadow
+EOF
+
+    # set a random password
+    ldappasswd -x -H $LDAP_URI -D "uid=$ldaplogin,ou=people,$BASE" -w "$ldappassword" -s "$password" "uid=$uid,ou=people,$BASE"
+
+    echo "------------------------------"
+    echo "Name:           $firstname $lastname"
+    echo "Login:          $uid"
+    echo "Password:       $password"
+    echo "Email:          $email"
+    echo "Alias email:    $emailalias"
+    echo "------------------------------"
+    echo "# to execute on nfs.lrde.epita.fr"
+    echo "mkdir /volume1/home/$group/$uid"
+    echo "chown $uidNumber:$gidNumber /volume1/home/$group/$uid"
+    echo "chmod 700 /volume1/home/$group/$uid"
+    echo "# to execute on kaboul.lrde.epita.fr"
+    echo "/root/generate_aliases"
+    echo "------------------------------"
+}
+
+create_account "$@"

@@ -1,0 +1,376 @@
+
+# [[ $(tty) == '/dev/tty1' ]] && startx
+
+# source /etc/profile
+source ~/.zshenv
+
+if [ -f ~/.zshrc.local ] ; then
+    source ~/.zshrc.local
+fi
+
+# GRML Functions {{{
+# Check for versions (compatibility reasons) {{{
+    is5(){
+        [[ $ZSH_VERSION == 4.3.<17->* || $ZSH_VERSION == 4.<4->* || $ZSH_VERSION == <5->* ]] && return 0
+        return 1
+    }
+# }}}
+# isdarwin() {{{
+isdarwin(){
+    [[ $OSTYPE == darwin* ]] && return 0
+    return 1
+}
+# }}}
+# isutfenv() {{{
+#f1# are we running within an utf environment?
+isutfenv() {
+    case "$LANG $CHARSET $LANGUAGE" in
+        *utf*) return 0 ;;
+        *UTF*) return 0 ;;
+        *)     return 1 ;;
+    esac
+}
+# }}}
+# autoload wrapper - use this one instead of autoload directly {{{
+function zrcautoload() {
+    emulate -L zsh
+    setopt extended_glob
+    local fdir ffile
+    local -i ffound
+
+    ffile=$1
+    (( found = 0 ))
+    for fdir in ${fpath} ; do
+        [[ -e ${fdir}/${ffile} ]] && (( ffound = 1 ))
+    done
+
+    (( ffound == 0 )) && return 1
+    if [[ $ZSH_VERSION == 3.1.<6-> || $ZSH_VERSION == <4->* ]] ; then
+        autoload -U ${ffile} || return 1
+    else
+        autoload ${ffile} || return 1
+    fi
+    return 0
+}
+# }}}
+# }}}
+
+# is5 && source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+# Functions {{{
+    function precmd() { echo -ne '\a' }
+    function aa_256()
+    {
+        ( x=`tput op` y=`printf %$((${COLUMNS}-6))s`;
+        for i in {0..256};
+        do
+            o=00$i;
+            echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;
+        done )
+    }
+    # silent (alias: shh) {{{
+        # Fonction redirigant la sortie de la commande passée en parametre
+        function silent(){ $@ >/dev/null 2>&1; }
+        alias shh='silent'
+    # }}}
+    # any {{{
+        # grep for running process, like: 'any vim'
+        any() {
+            emulate -L zsh
+            if [[ -z "$1" ]] ; then
+                echo "any - grep for process(es) by keyword" >&2
+                echo "Usage: any <keyword>" >&2 ; return 1
+            else
+                local STRING=$1
+                local LENGTH=$(expr length $STRING)
+                local FIRSCHAR=$(echo $(expr substr $STRING 1 1))
+                local REST=$(echo $(expr substr $STRING 2 $LENGTH))
+                ps xauwww| grep "[$FIRSCHAR]$REST"
+            fi
+        }
+    # }}}
+    # mcd {{{
+        # Create Directoy and \kbd{cd} to it
+        mcd() {
+            mkdir -p "$@" && cd "$@"
+        }
+    # }}}
+    # restart {{{
+    # Restart a process
+        restart() {
+            bin="$1"
+            shift
+            pkill $bin ; pkill $bin || pkill -9 $bin
+            $bin "$@"
+        }
+    # }}}
+    # zsh functions {{{
+        autoload zmv
+        autoload zcp
+        autoload zln
+    # }}}
+    function push() { scp -4 -l 30000 $@ clement@navroles.archivel.fr:/volume1/video/ }
+# }}}
+# Alias {{{
+    # General aliases {{{
+        # alias sudo="sudo -E"
+        alias -- +="sudo" # => alias '+'='sudo'
+        alias sv="+ vim"
+        alias ss="+ -s"
+        alias netcfg="+ netcfg"
+        alias sshfs="sshfs -o reconnect,nosuid,nodev,allow_other,uid=1000,gid=100"
+        alias chmod="chmod -v"
+        alias chown="chown -v"
+    # }}}
+    # Demande confirmation avant d'écraser un fichier {{{
+        alias cp='cp --interactive'
+        alias mv='mv --interactive'
+        alias rm='rm --interactive'
+    # }}}
+    # ls {{{
+        alias ls='ls --classify --tabsize=0 --literal --color=always --show-control-chars --human-readable'
+        alias ll='ls -l'
+        alias la='ls -a'
+        alias lla='ls -la'
+    # }}}
+    # SSH {{{
+        alias sshi='ssh iza'
+        alias sshn='ssh navis'
+        alias sshb='ssh bobo'
+        alias ssha='ssh argos'
+        alias sshar='ssh argos-root'
+        alias sshs='ssh saahre'
+        alias sshc='ssh coloane'
+        alias sshm='ssh memoar'
+    # }}}
+    # Quelques alias pratiques {{{
+        alias d='docker'
+        alias wget='wget --content-disposition'
+        alias tree='tree -C'
+        alias grep='grep -i --color=always'
+        alias less='less --quiet'
+        alias df='df --human-readable'
+        alias du='du --human-readable'
+        alias dus='+ du -hs * | sort -h'
+        alias rd='rm -rf'
+
+        alias screen='screen -x -RR'
+        alias pgrep='pgrep -l'
+        alias route='route -n'
+        alias aurploader-fork='aurploader-fork -l ~/.aurlogconf -r'
+    # }}}
+    # open {{{
+        if shh which xdg-open ; then
+            alias open='xdg-open'
+        fi
+    # }}}
+    # utilisation de pydf {{{
+        if shh which pydf ; then
+            alias df='pydf --human-readable'
+        fi
+    # }}}
+    # xprop {{{
+    alias xprop="xprop | sed -r -e 's/^WM_NAME\(STRING\)/name/p' -e 's/^WM_CLASS\(STRING\) = (.*), (.*)/instance = \1\nclass = \2/p' -e 'd'"
+    # }}}
+    # arch-wiki {{{
+    alias ws="wiki-search"
+    # }}}
+# }}}
+# Alias globaux {{{
+alias -g C='|wc -l'
+alias -g G='|grep'
+alias -g H='|head'
+alias -g Hl=' --help |& less -r'
+alias -g L='|less'
+#alias -g LL='|& less -r'
+#alias -g M='|most'
+alias -g N='&>/dev/null'
+#alias -g SL='| sort | less'
+#alias -g S='| sort'
+alias -g T='|tail'
+alias -g V='| vim -'
+# }}}
+# Keybindings {{{
+    bindkey -e
+
+    bindkey '^A'    beginning-of-line    # Home
+    bindkey '^E'    end-of-line          # End
+    bindkey '^D'    delete-char          # Del
+    bindkey '^[[1~' beginning-of-line    # Home
+    bindkey '^[[3~' delete-char          # Del
+    bindkey '^[[4~' end-of-line          # End
+    bindkey '^[[5~' up-line-or-history   # Page  Up
+    bindkey '^[[6~' down-line-or-history # Page  Down
+    bindkey "^[[7~" beginning-of-line    # Home
+    bindkey "^[[8~" end-of-line          # End
+    bindkey "^[OH"  beginning-of-line
+    bindkey "^[OF"  end-of-line
+    bindkey "^[[H"  beginning-of-line
+    bindkey "^[[F"  end-of-line
+
+    bindkey '^[[A'  up-line-or-search    # Up
+    bindkey '^[[D'  backward-char        # Left
+    bindkey '^[[B'  down-line-or-search  # Down
+    bindkey '^[[C'  forward-char         # Right
+
+    bindkey '^r'    history-incremental-search-backward # CTRL-R - Recherche dans l'historique
+    bindkey '#'    pound-insert
+# }}}
+# Zsh options {{{
+    # super globing
+    setopt extended_glob
+    # Je ne veux JAMAIS de beeps
+    unsetopt beep
+    unsetopt hist_beep
+    unsetopt list_beep
+    # >| doit être utilisés pour pouvoir écraser un fichier déjà existant ;
+    # le fichier ne sera pas écrasé avec '>'
+    unsetopt clobber
+    # Ctrl+D est équivalent à 'logout'
+    unsetopt ignore_eof
+    # Affiche le code de sortie si différent de '0'
+    setopt print_exit_value
+    # Demande confirmation pour 'rm *'
+    unsetopt rm_star_silent
+    # Correction orthographique des commandes
+    # Désactivé car, contrairement à ce que dit le "man", il essaye de
+    # corriger les commandes avant de les hasher
+    #setopt correct
+    # Si on utilise des jokers dans une liste d'arguments, retire les jokers
+    # qui ne correspondent à rien au lieu de donner une erreur
+    setopt nullglob
+
+    # Si la commande est invalide mais correspond au nom d'un sous-répertoire
+    # exécuter 'cd sous-répertoire'
+    setopt auto_cd
+    # L'exécution de "cd" met le répertoire d'où l'on vient sur la pile
+    setopt auto_pushd
+    # Ignore les doublons dans la pile
+    setopt pushd_ignore_dups
+    # N'affiche pas la pile après un "pushd" ou "popd"
+    setopt pushd_silent
+    # "pushd" sans argument = "pushd $HOME"
+    setopt pushd_to_home
+
+    # Les jobs qui tournent en tâche de fond sont nicé à '0'
+    unsetopt bg_nice
+    # N'envoie pas de "HUP" aux jobs qui tourent quand le shell se ferme
+    unsetopt hup
+
+    setopt complete_in_word # Not just at the end
+    setopt always_to_end # When complete from middle, move cursor
+    setopt no_match # Show error if pattern has no matches
+    setopt list_packed # Compact completion lists
+    setopt list_types # Show types in completion
+    # setopt recexact # Exact completion matches are good
+    # Historique {{{
+        setopt hist_verify # When using ! cmds, confirm first
+        setopt hist_ignore_all_dups # Ignore dups in command history
+        setopt hist_ignore_space # Don't add commands prepended by whitespace to history
+        setopt append_history # Allow multiple sessions to append to the history file
+        setopt extended_history # Save additional info to history file
+        setopt inc_append_history # Append commands to history immediately
+    # }}}
+# }}}
+# Zsh completion {{{
+    unsetopt list_ambiguous
+
+    # Options de complétion
+    # Quand le dernier caractère d'une complétion est '/' et que l'on
+    # tape 'espace' après, le '/' est effaçé
+    setopt auto_remove_slash
+    # Ne fait pas de complétion sur les fichiers et répertoires cachés
+    unsetopt glob_dots
+
+    # Traite les liens symboliques comme il faut
+    setopt chase_links
+
+    # history completion {{{
+        autoload -Uz history-beginning-search-menu
+        zle -N history-beginning-search-menu
+        bindkey '^X^X' history-beginning-search-menu
+    # }}}
+    # rationalise-dot {{{
+        rationalise-dot() {
+            if [[ $LBUFFER = *.. ]]; then
+                LBUFFER+=/..
+            else
+                LBUFFER+=.
+            fi
+        }
+        zle -N rationalise-dot
+        bindkey . rationalise-dot
+    # }}}
+    # zstyle {{{
+        # auto rehash commands
+        # http://www.zsh.org/mla/users/2011/msg00531.html
+        zstyle ':completion:*' rehash true
+
+        # for all completions: color
+        zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+        # for all completions: grouping the output
+        zstyle ':completion:*' group-name ''
+
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path ~/.cache_zsh_$USER
+        zstyle ':completion:*' completer _complete _match _approximate
+        zstyle ':completion:*:match:*' original only
+        zstyle ':completion:*:approximate:*' max-errors 1 numeric
+        zstyle ':completion:*:cd:*' ignore-parents parent pwd
+        zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}'
+        zstyle ':completion:*' max-errors 3 numeric
+        zstyle ':completion:*' use-compctl false
+        zstyle ':completion:*:*:kill:*' menu yes select
+        zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+        zstyle ':completion:*:*:killall:*:processes' command 'ps --forest -A -o pid,user,cmd'
+        zstyle ':completion:*:processes-names' command 'ps axho command'
+        zstyle ':completion:*:processes' command 'ps -au$USER -o pid,time,cmd|grep -v "ps -au$USER -o pid,time,cmd"'
+        zstyle ':completion:*:matches' group yes
+        zstyle ':completion:*:options' description yes
+        zstyle ':completion:*:options' auto-description '%d'
+
+        # for all completions: grouping / headline / ...
+        zstyle ':completion:*:descriptions' format $'\e[01;33m-- %d --\e[0m'
+        zstyle ':completion:*:messages' format $'\e[01;35m-- %d --\e[0m'
+        zstyle ':completion:*:warnings' format $'\e[01;31m-- no matches found --\e[0m'
+        zstyle ':completion:*:corrections' format "- %d - (errors %e})"
+
+        # statusline for many hits
+        zstyle ':completion:*:default' select-prompt $'\e[01;35m -- Match %M    %P -- \e[00;00m'
+
+        # for all completions: show comments when present
+        zstyle ':completion:*' verbose yes
+
+        zstyle ':completion:*:*:git-{name-rev,add,rm}:*' ignore-line true
+        zstyle ':completion:*' menu select=long
+        zstyle ':completion:*:(rm|kill|diff|vimdiff|vim):*' ignore-line yes
+    # }}}
+    # SSH hosts completion {{{
+        [ -f ~/.ssh/config ] && : ${(A)ssh_config_hosts:=${${${${(@M)${(f)"$(<~/.ssh/config)"}:#Host *}#Host }:#*\**}:#*\?*}}
+        [ -f ~/.ssh/known_hosts ] && : ${(A)ssh_known_hosts:=${${${(f)"$(<$HOME/.ssh/known_hosts)"}%%\ *}%%,*}}
+        zstyle ':completion:*:*:*' hosts $ssh_config_hosts $ssh_known_hosts
+    # }}}
+
+#     fpath=(~/tmp $fpath)
+    autoload -U compinit
+    compinit -u
+
+    # colors
+    autoload -U colors && colors
+
+    # Complétion basique
+    compdef _gnu_generic file
+# }}}
+# Root settings {{{
+    if [[ $UID == 0 ]]; then
+        # Close root shell after 600 seconds
+        export TMOUT=1800
+    fi
+# }}}
+
+# vim:filetype=zsh autoindent expandtab shiftwidth=4
