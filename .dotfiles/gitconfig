@@ -1,0 +1,21 @@
+[user]
+	email = michael.roynard@lrde.epita.fr
+	name = Michaël Roynard
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	br = branch
+	sl = log --graph --pretty=oneline --abbrev-commit --decorate
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+[push]
+	default = matching
+[pull]
+	rebase = true
+[diff]
+	renames = 0
+	renameLimit = 4000

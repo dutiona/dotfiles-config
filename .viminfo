@@ -1,0 +1,387 @@
+# Ce fichier viminfo a été généré par Vim 8.0.
+# Vous pouvez l'éditer, mais soyez prudent.
+
+# Viminfo version
+|1,4
+
+# 'encoding' dans lequel ce fichier a été écrit
+*encoding=utf-8
+
+
+# hlsearch on (H) or off (h):
+~h
+# Dernier motif de recherche  :
+~MSle0~/boost
+
+# Historique ligne de commande (chronologie décroissante) :
+:q!
+|2,0,1509618276,,"q!"
+:'<,'>q!
+|2,0,1509445789,,"'<,'>q!"
+:w
+|2,0,1509445771,,"w"
+:/boost
+|2,0,1509355046,,"/boost"
+:/tp1.hpp
+|2,0,1508837756,,"/tp1.hpp"
+:wq
+|2,0,1508834945,,"wq"
+:/mroy
+|2,0,1507900614,,"/mroy"
+
+# Historique chaîne de recherche (chronologie décroissante) :
+? boost
+|2,1,1509355046,,"boost"
+? tp1.hpp
+|2,1,1508837756,,"tp1.hpp"
+? mroy
+|2,1,1507900614,,"mroy"
+
+# Historique expression (chronologie décroissante) :
+
+# Historique ligne de saisie (chronologie décroissante) :
+
+# Historique Ligne de débogage (chronologie décroissante) :
+
+# Registres :
+
+# Marques dans le fichier :
+'0  1  0  ~/.dotfiles/gitconfig
+|4,48,1,0,1509618276,"~/.dotfiles/gitconfig"
+'1  61  0  ~/dotfiles-config/.dotfiles/install.sh
+|4,49,61,0,1509617230,"~/dotfiles-config/.dotfiles/install.sh"
+'2  1  0  ~/.dotfiles/.git/config
+|4,50,1,0,1509616617,"~/.dotfiles/.git/config"
+'3  1  0  ~/.dotfiles/.git/index
+|4,51,1,0,1509616574,"~/.dotfiles/.git/index"
+'4  1  0  ~/.dotfiles/.git/index
+|4,52,1,0,1509616564,"~/.dotfiles/.git/index"
+'5  2  0  ~/.zsh
+|4,53,2,0,1509616504,"~/.zsh"
+'6  1  0  /usr/bin/sourcetrail
+|4,54,1,0,1509454891,"/usr/bin/sourcetrail"
+'7  20  0  ~/.bashrc
+|4,55,20,0,1509445790,"~/.bashrc"
+'8  20  48  ~/.bashrc
+|4,56,20,48,1509445772,"~/.bashrc"
+'9  20  41  ~/.bashrc
+|4,57,20,41,1509445753,"~/.bashrc"
+
+# Liste de sauts (le plus récent en premier) :
+-'  1  0  ~/.dotfiles/gitconfig
+|4,39,1,0,1509618276,"~/.dotfiles/gitconfig"
+-'  61  0  ~/dotfiles-config/.dotfiles/install.sh
+|4,39,61,0,1509617230,"~/dotfiles-config/.dotfiles/install.sh"
+-'  61  0  ~/dotfiles-config/.dotfiles/install.sh
+|4,39,61,0,1509617230,"~/dotfiles-config/.dotfiles/install.sh"
+-'  1  0  ~/dotfiles-config/.dotfiles/install.sh
+|4,39,1,0,1509617188,"~/dotfiles-config/.dotfiles/install.sh"
+-'  1  0  ~/dotfiles-config/.dotfiles/install.sh
+|4,39,1,0,1509617188,"~/dotfiles-config/.dotfiles/install.sh"
+-'  1  0  ~/.dotfiles/.git/config
+|4,39,1,0,1509616617,"~/.dotfiles/.git/config"
+-'  1  0  ~/.dotfiles/.git/config
+|4,39,1,0,1509616617,"~/.dotfiles/.git/config"
+-'  1  0  ~/.dotfiles/.git/config
+|4,39,1,0,1509616617,"~/.dotfiles/.git/config"
+-'  1  0  ~/.dotfiles/.git/config
+|4,39,1,0,1509616617,"~/.dotfiles/.git/config"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616574,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  1  0  ~/.dotfiles/.git/index
+|4,39,1,0,1509616564,"~/.dotfiles/.git/index"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  2  0  ~/.zsh
+|4,39,2,0,1509616504,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  ~/.zsh
+|4,39,1,0,1509616498,"~/.zsh"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+-'  1  0  /usr/bin/sourcetrail
+|4,39,1,0,1509454891,"/usr/bin/sourcetrail"
+
+# Historique des marques dans les fichiers (les plus récentes en premier) :
+
+> ~/.dotfiles/gitconfig
+	*	1509618266	0
+	"	1	0
+	^	21	19
+	.	2	34
+	+	2	34
+
+> ~/dotfiles-config/.dotfiles/install.sh
+	*	1509617225	0
+	"	61	0
+
+> ~/.dotfiles/.git/config
+	*	1509616583	0
+	"	1	0
+
+> ~/.dotfiles/.git/index
+	*	1509616568	0
+	"	1	0
+
+> /usr/bin/sourcetrail
+	*	1509454888	0
+	"	1	0
+
+> ~/.bashrc
+	*	1509445789	0
+	"	20	0
+	^	20	49
+	.	20	48
+	+	20	48
+
+> /work/mroynard/lrde/pylene/build/CMakeCache.txt
+	*	1509355216	0
+	"	1	0
+
+> /work/mroynard/vendor/boost_1_49_0/project-config.jam
+	*	1509354703	0
+	"	27	0
+
+> /work/mroynard/vendor/boost_1_49_0/Jamroot
+	*	1509354667	0
+	"	252	0
+
+> /work/mroynard/lrde/atelier-algo/build/compile_commands.json
+	*	1508837756	0
+	"	35	0
+
+> /work/mroynard/lrde/phymix/CMakeLists.txt
+	*	1508836380	0
+	"	13	48
+
+> /work/mroynard/lrde/phymix/.vscode/settings.json
+	*	1508835101	0
+	"	15	0
+
+> /work/mroynard/lrde/atelier-algo/day2/.gitignore
+	*	1508834944	0
+	"	1	4
+	^	1	5
+	.	1	4
+	+	1	4
+
+> /work/mroynard/lrde/atelier-algo/day2/CMakeLists.txt
+	*	1508834842	0
+	"	1	0
+
+> /work/mroynard/vendor/boost_1_42/project-config.jam
+	*	1508769159	0
+	"	31	45
+	^	31	46
+	.	31	45
+	+	31	45
+
+> /work/mroynard/vendor/boost_1_42/INSTALL
+	*	1508768846	0
+	"	1	0
+
+> /work/mroynard/lrde/pylene/build/Makefile
+	*	1508768462	0
+	"	251	46
+
+> /work/mroynard/lrde/pylene/build/make
+	*	1508768401	0
+	"	1	0
+
+> /work/mroynard/lrde/pylene/build/compile_commands.json
+	*	1508768376	0
+	"	72	0
+
+> /opt/dev/clion-2017.2.3/Install-Linux-tar.txt
+	*	1508768236	0
+	"	1	0
+
+> /work/mroynard/lrde/phymix/.git/config
+	*	1508161261	0
+	"	1	0
+
+> /etc/gitconfig
+	*	1508161252	0
+	"	1	0
+
+> /usr/bin/run-clang-tidy-5.0.py
+	*	1508157795	0
+	"	245	0
+
+> /work/mroynard/lrde/phymix/build/compile_commands.json
+	*	1508143789	0
+	"	1	0
+
+> /etc/passwd
+	*	1507901550	0
+	"	42	21
+	^	42	22
+	.	42	21
+	+	42	21
